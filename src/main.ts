@@ -6,13 +6,18 @@ import { envs } from './config/envs';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const logger = new Logger('Main');
+  const logger = new Logger('ProductsMS-Main');
+
+  console.log(envs.natsServers);
+
   //*De esta forma es como convertimos nuestro servicio rest a microservicio usando TCP como transporte
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
     {
-      transport: Transport.TCP,
+      //transport: Transport.TCP, -> Conexion con TCP
+      transport: Transport.NATS, //-> Conexion con NATS
       options:{
-        port: envs.port
+        //port: envs.port -> Puerto de nuestro microservicio
+        servers: envs.natsServers //*servers recibe un arreglo de servidores NATS ['nats://localhost:4222','nats://localhost:4223'] 
       }
     },);
   app.useGlobalPipes(
